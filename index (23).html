@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Gestione cantieri</title>
+<style>
+:root{--bg:#ecebe7;--card:#fff;--tx:#1c1f22;--mut:#6a6e72;--ac:#f5b800;--on:#1c1f22;--bd:#d3d2cc;--ok:#15803d;--er:#b91c1c}
+@media(prefers-color-scheme:dark){:root{--bg:#15171a;--card:#1f2327;--tx:#eceae4;--mut:#9aa0a6;--bd:#343a40;--ok:#4ade80;--er:#f87171}}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--tx)}
+header{display:flex;gap:12px;align-items:center;padding:12px 16px;background:var(--tx);color:var(--bg)}
+header b{font-size:17px}header span{flex:1;font-size:13px;opacity:.7}
+nav{display:flex;gap:2px;overflow-x:auto;padding:0 16px;border-bottom:2px solid var(--bd);background:var(--card)}
+nav button{background:none;color:var(--mut);border:0;border-bottom:4px solid transparent;border-radius:0;text-transform:capitalize;white-space:nowrap;padding:12px 14px;margin-bottom:-2px}
+nav button.on{color:var(--tx);border-bottom-color:var(--ac)}
+main{padding:0 16px 48px;max-width:920px;margin:auto}
+.card,.box{background:var(--card);border:1px solid var(--bd);border-radius:6px;padding:16px;margin:14px 0;display:flex;flex-direction:column;gap:10px}
+.cant{border-left:6px solid var(--ac)}
+.box{max-width:380px;margin:12vh auto}
+input,select,button{font:inherit;padding:11px 12px;border-radius:6px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--ac);outline-offset:1px}
+button{background:var(--ac);color:var(--on);border:0;cursor:pointer;font-weight:700}
+button.g{background:transparent;color:var(--tx);border:1px solid var(--bd);padding:7px 12px;font-weight:500}
+button.d{color:var(--er)}
+.sc{overflow-x:auto;background:var(--card);border:1px solid var(--bd);border-radius:6px;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{color:var(--mut);font-weight:500}tr:last-child td{border-bottom:0}
+h1,h3{margin:0}.err{color:var(--er);margin:0}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.k{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;font-size:14px}
+.k b{display:block;font-size:18px}.k span{color:var(--mut)}.pos{color:var(--ok)}.vuoto{color:var(--mut);padding:24px 0;text-align:center}
+.mod{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
+.mbox{background:var(--card);border:1px solid var(--bd);border-top:6px solid var(--er);border-radius:6px;padding:20px;max-width:380px;width:100%;display:flex;flex-direction:column;gap:12px}
+.mbox p{margin:0}.mbox .row button{flex:1}button.d2{background:var(--er);color:#fff}
+
+.kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0}
+.kc{background:var(--card);border:1px solid var(--bd);border-left:6px solid var(--ac);border-radius:6px;padding:12px 14px}
+.kc span{display:block;color:var(--mut);font-size:13px}.kc b{display:block;font-size:22px;margin-top:2px}
+.neg{color:var(--er)}
+.gr{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.gr .card{margin:0}.gr .card h3{font-size:16px}
+.hb{display:flex;flex-direction:column;gap:8px}
+.hr{display:grid;grid-template-columns:minmax(70px,30%) 1fr auto;gap:8px;align-items:center;font-size:13px}
+.hl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ht{background:var(--bg);border-radius:4px;height:14px;overflow:hidden}
+.hf{background:var(--ac);height:100%;border-radius:4px}
+.hf.r{background:var(--er)}.hf.v{background:var(--ok)}
+.duo{display:flex;flex-direction:column;gap:3px;min-width:0}
+.vb{display:flex;gap:6px;align-items:flex-end;height:190px}
+.vc{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;min-width:0}
+.vc small{color:var(--mut);font-size:11px;white-space:nowrap}
+.vt{flex:1;width:100%;display:flex;align-items:flex-end;background:var(--bg);border-radius:4px;overflow:hidden}
+.vf{width:100%;background:var(--ac);border-radius:4px 4px 0 0}.vf.r{background:var(--er)}
+.dn{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.dn svg{width:130px;height:130px;flex:none}
+.lg{display:flex;flex-direction:column;gap:5px;font-size:13px;flex:1;min-width:130px}
+.lg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px}
+.lg div{display:flex;justify-content:space-between;gap:8px}
+.leg{display:flex;gap:14px;font-size:12px;color:var(--mut)}.leg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script>
+const URL_SB = "https://lcrerhqwxkcuqttvlesu.supabase.co";
+const KEY_SB = "sb_publishable_14qUKNJHSmCkxKI5N62l6Q_av8TlWHe";
+const sb = supabase.createClient(URL_SB, KEY_SB);
+
+let me = null, tab = "", D = {}, det = null, recov = false;
+const app = document.getElementById("app");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const eur = n => Number(n || 0).toLocaleString("it-IT", {style:"currency", currency:"EUR"});
+const oggi = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+const v = id => document.getElementById(id).value;
+const sum = (a, k) => a.reduce((t, x) => t + (+x[k] || 0), 0);
+const adm = () => me && me.ruolo === "admin";
+const extra = c => [].concat(c.cantieri_admin || [])[0] || {};
+
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (recov) return recupero();
+  if (!session) return login();
+  const { data } = await sb.from("profili").select("*").eq("id", session.user.id).maybeSingle();
+  if (!data) {
+    app.innerHTML = `<div class="box"><h3>Profilo non configurato</h3><p>Questo utente non è collegato a nessuna azienda. Contatta l’amministratore.</p><button onclick="logout()">Esci</button></div>`;
+    return;
+  }
+  me = data;
+  tab = adm() ? "dashboard" : "ore";
+  await load();
+  render();
+}
+
+function login() {
+  app.innerHTML = `<div class="box"><h1>Gestione cantieri</h1>
+    <input id="em" type="email" placeholder="Email" autocomplete="username">
+    <input id="pw" type="password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button onclick="doLogin()">Accedi</button><p id="err" class="err"></p></div>`;
+}
+async function doLogin() {
+  const { error } = await sb.auth.signInWithPassword({ email: v("em").trim(), password: v("pw") });
+  if (error) document.getElementById("err").textContent = /not confirmed/i.test(error.message) ? "Email non confermata. L’amministratore deve disattivare la conferma email in Supabase." : "Email o password errate.";
+  else init();
+}
+sb.auth.onAuthStateChange(ev => { if (ev === "PASSWORD_RECOVERY") { recov = true; recupero(); } });
+function recupero() {
+  app.innerHTML = `<div class="box"><h3>Scegli la nuova password</h3><input id="np" type="password" placeholder="Nuova password (min. 6 caratteri)" autocomplete="new-password"><button onclick="salvaPw()">Salva password</button><p id="err" class="err"></p></div>`;
+}
+async function salvaPw() {
+  const { error } = await sb.auth.updateUser({ password: v("np") });
+  if (error) document.getElementById("err").textContent = error.message;
+  else { recov = false; init(); }
+}
+async function logout() { await sb.auth.signOut(); me = null; login(); }
+
+async function load() {
+  const A = adm();
+  const q = [
+    sb.from("cantieri").select(A ? "*,cantieri_admin(*)" : "*").order("nome"),
+    sb.from("ore").select("*,profili(nome),cantieri(nome)").order("data", { ascending: false })
+  ];
+  if (A) q.push(
+    sb.from("spese").select("*,cantieri(nome)").order("data", { ascending: false }),
+    sb.from("profili").select("*").order("nome"),
+    sb.from("storico").select("*").order("eliminato_il", { ascending: false }),
+    sb.from("profili_admin").select("*"),
+    sb.from("categorie_spese").select("*").order("nome")
+  );
+  const r = await Promise.all(q);
+  const g = i => (r[i] && r[i].data) || [];
+  D = { cantieri: g(0), ore: g(1), spese: g(2), profili: g(3), storico: g(4), profili_admin: g(5), categorie: g(6) };
+  const az = await sb.from("aziende").select("nome").maybeSingle();
+  D.azienda = (az.data && az.data.nome) || "";
+}
+
+function render() {
+  const A = adm();
+  const tabs = A ? ["dashboard", "cantieri", "ore", "spese", "dipendenti", "storico"] : ["ore"];
+  app.innerHTML = `<header><b>${esc(D.azienda || "Gestione cantieri")}</b><span>${esc(me.nome || "")} · ${A ? "Amministratore" : "Operaio"}</span>${A ? `<button class="g" style="color:inherit;border-color:#888" onclick="setAz()">Nome azienda</button>` : ""}<button class="g" style="color:inherit;border-color:#888" onclick="logout()">Esci</button></header>
+    <nav>${tabs.map(t => `<button class="${t === tab ? "on" : ""}" onclick="tab='${t}';det=null;render()">${t}</button>`).join("")}</nav>
+    <main>${V[tab]()}</main>`;
+}
+
+const opt = () => D.cantieri.filter(c => c.attivo).map(c => `<option value="${c.id}">${esc(c.nome)}</option>`).join("");
+const tbl = (head, rows) => rows.length
+  ? `<div class="sc"><table><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr>${rows.map(r => `<tr class="r">${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("")}</table></div>`
+  : `<p class="vuoto">Ancora nessun dato.</p>`;
+const xBtn = (t, id) => `<button class="g d" onclick="del('${t}','${id}')">Elimina</button>`;
+
+const PAL = ["#f5b800","#3b82f6","#10b981","#ef4444","#8b5cf6","#f97316","#14b8a6","#ec4899"];
+const MESI = ["gen","feb","mar","apr","mag","giu","lug","ago","set","ott","nov","dic"];
+const tarP = id => { const x = (D.profili_admin || []).find(a => a.profilo_id == id); return x ? +x.tariffa || 0 : 0; };
+const tar = o => tarP(o.profilo_id);
+const num = x => {
+  x = String(x ?? "").trim().replace(/[\s€]/g, "");
+  if (x.includes(",")) x = x.replace(/\./g, "").replace(",", ".");
+  else if (/^\d{1,3}(\.\d{3})+$/.test(x)) x = x.replace(/\./g, "");
+  return parseFloat(x) || 0;
+};
+const manod = arr => arr.reduce((t, o) => t + (+o.ore || 0) * tar(o), 0);
+const conto = c => {
+  const a = extra(c), o = D.ore.filter(x => x.cantiere_id == c.id), sp = sum(D.spese.filter(x => x.cantiere_id == c.id), "importo");
+  const man = manod(o), f = man + sp, iva = Number(a.iva ?? 22) || 0;
+  return { a, h: sum(o, "ore"), man, sp, f, iva, ivaE: f * iva / 100, tot: f * (1 + iva / 100) };
+};
+const catList = () => {
+  const set = new Set([...(D.categorie || []).map(c => c.nome), ...D.spese.map(x => x.categoria).filter(Boolean)]);
+  set.delete("Altro");
+  return [...set].sort((x, y) => x.localeCompare(y, "it")).concat("Altro");
+};
+const nvuoto = `<p class="vuoto">Ancora nessun dato.</p>`;
+const short = n => Math.abs(n) >= 1000 ? (n / 1000).toFixed(1).replace(".", ",") + "k" : String(Math.round(n * 10) / 10).replace(".", ",");
+function ultimiMesi(n) {
+  const r = [], d = new Date();
+  for (let i = n - 1; i >= 0; i--) {
+    const x = new Date(d.getFullYear(), d.getMonth() - i, 1);
+    r.push({ k: x.getFullYear() + "-" + String(x.getMonth() + 1).padStart(2, "0"), l: MESI[x.getMonth()] + (x.getMonth() === 0 ? " " + String(x.getFullYear()).slice(2) : "") });
+  }
+  return r;
+}
+const perMese = (arr, campo, mesi) => mesi.map(m => sum(arr.filter(x => (x.data || "").slice(0, 7) === m.k), campo));
+const raggruppa = (arr, chiave, valore) => {
+  const m = {};
+  arr.forEach(x => { const k = chiave(x) || "-"; m[k] = (m[k] || 0) + valore(x); });
+  return Object.entries(m).map(([l, v]) => ({ l, v })).filter(i => i.v > 0).sort((a, b) => b.v - a.v);
+};
+function hbar(items, fmt = short, cls = "") {
+  const mx = Math.max(0, ...items.map(i => i.v));
+  if (!items.length || mx <= 0) return nvuoto;
+  return `<div class="hb">${items.map(i => `<div class="hr"><span class="hl" title="${esc(i.l)}">${esc(i.l)}</span><div class="ht"><div class="hf ${cls}" style="width:${Math.max(i.v / mx * 100, 1)}%"></div></div><b>${fmt(i.v)}</b></div>`).join("")}</div>`;
+}
+function vbar(lab, vals, cls = "") {
+  if (Math.max(0, ...vals) <= 0) return nvuoto;
+  const mx = Math.max(...vals);
+  return `<div class="vb">${vals.map((v, i) => `<div class="vc"><small>${v ? short(v) : ""}</small><div class="vt"><div class="vf ${cls}" style="height:${v / mx * 100}%"></div></div><small>${lab[i]}</small></div>`).join("")}</div>`;
+}
+function duo(items, la = "Fatturato", lb = "Costi") {
+  const mx = Math.max(0, ...items.flatMap(i => [i.a, i.b]));
+  if (!items.length || mx <= 0) return nvuoto;
+  return `<div class="leg"><span><i style="background:var(--ok)"></i>${la}</span><span><i style="background:var(--er)"></i>${lb}</span></div><div class="hb">${items.map(i => `<div class="hr"><span class="hl" title="${esc(i.l)}">${esc(i.l)}</span><div class="duo"><div class="ht"><div class="hf v" style="width:${i.a / mx * 100}%"></div></div><div class="ht"><div class="hf r" style="width:${i.b / mx * 100}%"></div></div></div><b style="font-size:12px;text-align:right">${short(i.a)}<br>${short(i.b)}</b></div>`).join("")}</div>`;
+}
+function donut(items) {
+  let it = items.slice(0, 6);
+  const resto = sum(items.slice(6), "v");
+  if (resto > 0) it.push({ l: "Altri", v: resto });
+  const tot = sum(it, "v");
+  if (tot <= 0) return nvuoto;
+  const R = 40, C = 2 * Math.PI * R;
+  let off = 0;
+  const seg = it.map((i, k) => {
+    const len = i.v / tot * C;
+    const c = `<circle r="${R}" cx="60" cy="60" fill="none" stroke="${PAL[k % PAL.length]}" stroke-width="22" stroke-dasharray="${len} ${C - len}" stroke-dashoffset="${-off}" transform="rotate(-90 60 60)"/>`;
+    off += len; return c;
+  }).join("");
+  return `<div class="dn"><svg viewBox="0 0 120 120" role="img" aria-label="Grafico a torta">${seg}</svg><div class="lg">${it.map((i, k) => `<div><span><i style="background:${PAL[k % PAL.length]}"></i>${esc(i.l)}</span><b>${Math.round(i.v / tot * 100)}%</b></div>`).join("")}</div></div>`;
+}
+
+const V = {
+  dashboard: () => {
+    const aperti = D.cantieri.filter(c => c.attivo).length, chiusi = D.cantieri.length - aperti;
+    const CC = D.cantieri.map(c => ({ c, ...conto(c) }));
+    const fat = sum(CC, "f"), iva = sum(CC, "ivaE"), cos = sum(D.spese, "importo");
+    const nOp = D.profili.filter(p => p.ruolo !== "admin").length;
+    const mesi = ultimiMesi(6), lab = mesi.map(m => m.l);
+    const perCant = CC.map(x => ({ l: x.c.nome, a: x.man, b: x.sp })).filter(i => i.a > 0 || i.b > 0).sort((x, y) => (y.a + y.b) - (x.a + x.b)).slice(0, 8);
+    const kp = (t, v, c = "") => `<div class="kc"><span>${t}</span><b class="${c}">${v}</b></div>`;
+    return `<div class="kg">
+        ${kp("Cantieri aperti", aperti)}${kp("Cantieri chiusi", chiusi)}${kp("Ore totali", short(sum(D.ore, "ore")))}
+        ${kp("Manodopera (ore × tariffa)", eur(manod(D.ore)))}${kp("Spese (costi vari)", eur(cos))}${kp("Fatturato", eur(fat))}
+        ${kp("IVA", eur(iva))}${kp("Totale con IVA", eur(fat + iva))}${kp("Operai", nOp)}</div>
+      <div class="gr">
+        <div class="card"><h3>Manodopera e spese per cantiere</h3>${duo(perCant, "Manodopera", "Spese")}</div>
+        <div class="card"><h3>Ore per cantiere</h3>${hbar(raggruppa(D.ore, o => o.cantieri?.nome, o => +o.ore || 0).slice(0, 8))}</div>
+        <div class="card"><h3>Ore per operaio</h3>${hbar(raggruppa(D.ore, o => o.profili?.nome, o => +o.ore || 0).slice(0, 8))}</div>
+        <div class="card"><h3>Ore ultimi 6 mesi</h3>${vbar(lab, perMese(D.ore, "ore", mesi))}</div>
+        <div class="card"><h3>Spese ultimi 6 mesi (€)</h3>${vbar(lab, perMese(D.spese, "importo", mesi), "r")}</div>
+        <div class="card"><h3>Spese per cantiere</h3>${donut(raggruppa(D.spese, s => s.cantieri?.nome, s => +s.importo || 0))}</div>
+        <div class="card"><h3>Spese per categoria (€)</h3>${hbar(raggruppa(D.spese, s => s.categoria || "Senza categoria", s => +s.importo || 0).slice(0, 8), short, "r")}</div>
+        <div class="card"><h3>Costo manodopera per cantiere (€)</h3>${hbar(D.cantieri.map(c => ({ l: c.nome, v: manod(D.ore.filter(o => o.cantiere_id == c.id)) })).filter(i => i.v > 0).sort((x, y) => y.v - x.v).slice(0, 8), short, "r")}</div>
+        <div class="card"><h3>Costo manodopera per operaio (€)</h3>${hbar(D.profili.map(p => ({ l: p.nome, v: manod(D.ore.filter(o => o.profilo_id == p.id)) })).filter(i => i.v > 0).sort((x, y) => y.v - x.v).slice(0, 8), short, "r")}</div>
+        <div class="card"><h3>Fatturato per cantiere (€)</h3>${hbar(CC.map(x => ({ l: x.c.nome, v: x.f })).filter(i => i.v > 0).sort((x, y) => y.v - x.v).slice(0, 8), short, "v")}</div>
+      </div>`;
+  },
+  cantieri: () => `<div class="card"><h3>Nuovo cantiere</h3>
+      <input id="nn" placeholder="Nome del cantiere"><input id="cl" placeholder="Cliente">
+      <select id="iv"><option value="22">IVA 22%</option><option value="10">IVA 10%</option><option value="4">IVA 4%</option><option value="0">IVA 0%</option></select>
+      <button onclick="addCant()">Crea cantiere</button></div>`
+    + (D.cantieri.map(c => {
+      const { a, h, man, sp, f, iva, ivaE, tot } = conto(c);
+      return `<div class="card cant"><div class="row"><b style="flex:1">${esc(c.nome)}</b><span>${c.attivo ? "Aperto" : "Chiuso"}</span></div>
+        <small>${esc(a.cliente || "Nessun cliente")}</small>
+        <div class="k"><div><span>Ore</span><b>${h}</b></div><div><span>Manodopera</span><b>${eur(man)}</b></div><div><span>Spese</span><b>${eur(sp)}</b></div>
+        <div><span>Fatturato (manodopera + spese)</span><b>${eur(f)}</b></div>
+        <div><span>IVA ${iva}%</span><b>${eur(ivaE)}</b></div><div><span>Totale con IVA</span><b class="pos">${eur(tot)}</b></div></div>
+        <div class="row"><button class="g" onclick="setIva('${c.id}',${iva})">IVA</button>
+        <button class="g" onclick="togg('${c.id}',${!c.attivo})">${c.attivo ? "Chiudi" : "Riapri"}</button><button class="g" onclick="salvaPdf('${c.id}')">Salva PDF</button><button class="g d" onclick="delC('${c.id}')">Elimina cantiere</button></div></div>`;
+    }).join("") || `<p class="vuoto">Crea il primo cantiere.</p>`),
+
+  ore: () => `<div class="card"><h3>Registra ore</h3><select id="cn">${opt()}</select>
+      <input id="dt" type="date" value="${oggi()}"><input id="oo" type="number" step="0.5" min="0" placeholder="Ore lavorate">
+      <button onclick="addOre()">Salva ore</button></div>`
+    + (adm()
+      ? tbl(["Data", "Cantiere", "Persona", "Ore", "Tariffa", "Costo", ""],
+        D.ore.map(o => [o.data, esc(o.cantieri?.nome), esc(o.profili?.nome), o.ore, eur(tar(o)) + "/h", eur((+o.ore || 0) * tar(o)), xBtn("ore", o.id)]))
+      : tbl(["Data", "Cantiere", "Ore"], D.ore.map(o => [o.data, esc(o.cantieri?.nome), o.ore]))),
+
+  spese: () => `<div class="card"><h3>Nuova spesa / materiale</h3><select id="cn">${opt()}</select>
+      <select id="ct" onchange="document.getElementById('nc').style.display = this.value === '__nuova' ? '' : 'none'">${catList().map(c => `<option>${esc(c)}</option>`).join("")}<option value="__nuova">➕ Nuova categoria…</option></select>
+      <input id="nc" placeholder="Nome della nuova categoria (resterà salvata)" style="display:none">
+      <input id="ds" placeholder="Descrizione (es. cemento 32.5, noleggio betoniera)"><input id="dt" type="date" value="${oggi()}">
+      <input id="qt" type="number" step="0.01" min="0" placeholder="Quantità" oninput="calcImp()">
+      <input id="pr" type="number" step="0.01" min="0" placeholder="Prezzo unitario in euro (€)" oninput="calcImp()">
+      <div class="row"><span>Importo totale (quantità × prezzo):</span><b id="tot">${eur(0)}</b></div>
+      <button onclick="addSpesa()">Salva spesa</button><button class="g d" onclick="delCat()">Rimuovi la categoria selezionata dall’elenco</button></div>`
+    + tbl(["Data", "Cantiere", "Categoria", "Descrizione", "Quantità", "Prezzo", "Importo", ""],
+      D.spese.map(s => [s.data, esc(s.cantieri?.nome), esc(s.categoria || "-"), esc(s.descrizione), s.quantita ?? "", s.prezzo_unitario != null ? eur(s.prezzo_unitario) : "", eur(s.importo), xBtn("spese", s.id)])),
+
+  dipendenti: () => det ? dett() : `<div class="card"><h3>Aggiungi dipendente</h3>
+      <input id="dn" placeholder="Nome e cognome"><input id="de" type="email" placeholder="Email"><input id="dp" type="text" placeholder="Password iniziale (min. 6 caratteri)">
+      <input id="dtf" type="number" step="0.01" min="0" placeholder="Tariffa oraria in euro (€/h)">
+      <button onclick="addDip()">Crea dipendente</button></div>`
+    + tbl(["Nome", "Email", "Ore", "Tariffa", "Costo", "", "", ""], D.profili.map(p => [esc(p.nome) + (p.ruolo === "admin" ? " (tu)" : ""), esc(p.email || "-"),
+      sum(D.ore.filter(o => o.profilo_id == p.id), "ore"), eur(tarP(p.id)) + "/h", eur(manod(D.ore.filter(o => o.profilo_id == p.id))),
+      `<button class="g" onclick="setTP('${p.id}')">Tariffa</button>`,
+      `<button class="g" onclick="det='${p.id}';render()">Dettaglio</button>`,
+      `<button class="g" onclick="resetPw('${p.id}')">Reset password</button>`])),
+
+  storico: () => `<div class="card"><h3>Storico cantieri eliminati</h3><input placeholder="Cerca per nome del cantiere" oninput="filt(this.value)"></div>`
+    + tbl(["Cantiere", "Spese", "Fatturato", "Manodopera", "Eliminato il", ""],
+      D.storico.map(s => [esc(s.nome_cantiere), eur(s.costo), eur(s.fatturato), eur(s.ricavo), (s.eliminato_il || "").slice(0, 10), xBtn("storico", s.id)]))
+};
+
+function filt(t) {
+  t = t.toLowerCase();
+  document.querySelectorAll("tr.r").forEach(r => r.style.display = r.textContent.toLowerCase().includes(t) ? "" : "none");
+}
+async function done(e) { if (e) return alert("Errore: " + e.message); await load(); render(); }
+async function del(t, id) { if (confirm("Eliminare questa riga?")) done((await sb.from(t).delete().eq("id", id)).error); }
+
+async function addOre() {
+  if (!v("cn") || !(+v("oo") > 0)) return alert("Scegli il cantiere e inserisci le ore.");
+  done((await sb.from("ore").insert({ azienda_id: me.azienda_id, cantiere_id: v("cn"), data: v("dt"), ore: +v("oo") })).error);
+}
+async function setTP(id) {
+  const p = D.profili.find(x => x.id == id) || {};
+  const x = prompt("Tariffa oraria di " + (p.nome || "questa persona") + " in euro (€/h)", tarP(id));
+  if (x === null) return;
+  done((await sb.from("profili_admin").upsert({ profilo_id: id, azienda_id: me.azienda_id, tariffa: num(x) })).error);
+}
+function calcImp() {
+  const t = document.getElementById("tot");
+  if (t) t.textContent = eur((num(v("qt")) || 1) * num(v("pr")));
+}
+async function addSpesa() {
+  const q = v("qt").trim() === "" ? 1 : num(v("qt")), pr = num(v("pr"));
+  if (!v("cn") || !(q > 0) || !(pr > 0)) return alert("Scegli il cantiere e inserisci quantità e prezzo.");
+  let cat = v("ct");
+  if (cat === "__nuova") {
+    cat = v("nc").trim();
+    if (!cat) return alert("Scrivi il nome della nuova categoria.");
+    cat = catList().find(c => c.toLowerCase() === cat.toLowerCase()) || cat;
+    const e = (await sb.from("categorie_spese").upsert({ azienda_id: me.azienda_id, nome: cat }, { onConflict: "azienda_id,nome" })).error;
+    if (e) alert("Categoria usata per questa spesa ma non salvata nell’elenco: " + e.message + "\nHai eseguito lo SQL per la tabella categorie_spese?");
+  }
+  done((await sb.from("spese").insert({
+    azienda_id: me.azienda_id, cantiere_id: v("cn"), data: v("dt"), categoria: cat, descrizione: v("ds").trim(),
+    quantita: q, prezzo_unitario: pr, importo: Math.round(q * pr * 100) / 100
+  })).error);
+}
+async function delCat() {
+  const c = v("ct");
+  if (c === "__nuova" || c === "Altro") return alert("Scegli una categoria da rimuovere. “Altro” resta sempre.");
+  if (!confirm("Rimuovere la categoria “" + c + "” dall’elenco?")) return;
+  const e = (await sb.from("categorie_spese").delete().eq("azienda_id", me.azienda_id).eq("nome", c)).error;
+  if (e) return alert("Errore: " + e.message);
+  if (D.spese.some(x => x.categoria === c)) alert("Rimossa, ma resta nell’elenco finché esistono spese che la usano.");
+  done(null);
+}
+async function addCant() {
+  const n = v("nn").trim();
+  if (!n) return alert("Inserisci il nome del cantiere.");
+  const { data, error } = await sb.from("cantieri").insert({ azienda_id: me.azienda_id, nome: n }).select().single();
+  if (error) return alert("Errore: " + error.message);
+  done((await sb.from("cantieri_admin").insert({ cantiere_id: data.id, cliente: v("cl").trim(), iva: +v("iv") })).error);
+}
+async function setIva(id, i) {
+  const x = prompt("IVA: scrivi 0, 4, 10 oppure 22", i);
+  if (x === null) return;
+  if (![0, 4, 10, 22].includes(+x)) return alert("Valore non valido.");
+  done((await sb.from("cantieri_admin").upsert({ cantiere_id: id, iva: +x })).error);
+}
+async function setAz() {
+  const x = prompt("Nome dell’azienda (appare nell’intestazione e nei PDF)", D.azienda);
+  if (x === null || !x.trim()) return;
+  const r = await sb.from("aziende").update({ nome: x.trim() }).eq("id", me.azienda_id).select();
+  if (!r.error && !r.data.length) return alert("Non posso modificare il nome: manca il permesso nel database.");
+  done(r.error);
+}
+
+function salvaPdf(id) {
+  const c = D.cantieri.find(x => x.id == id), a = extra(c);
+  const o = D.ore.filter(x => x.cantiere_id == id), s = D.spese.filter(x => x.cantiere_id == id);
+  const { man, sp, f, iva, ivaE } = conto(c);
+  const per = {};
+  o.forEach(x => { const k = x.profilo_id || "-"; per[k] = per[k] || { n: x.profili?.nome || "-", h: 0, t: tar(x) }; per[k].h += (+x.ore || 0); });
+  const E = n => Number(n || 0).toLocaleString("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " EUR";
+  const azienda = D.azienda || "Azienda";
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ unit: "mm", format: "a4" });
+  const W = pdf.internal.pageSize.getWidth(), mg = 14, ink = [28, 31, 34];
+
+  pdf.setFillColor(...ink); pdf.rect(0, 0, W, 34, "F");
+  pdf.setFillColor(245, 184, 0); pdf.rect(0, 34, W, 2.5, "F");
+  pdf.setTextColor(255, 255, 255); pdf.setFont("helvetica", "bold"); pdf.setFontSize(20);
+  pdf.text(azienda, mg, 16);
+  pdf.setFont("helvetica", "normal"); pdf.setFontSize(10);
+  pdf.text("Conto finale del cantiere", mg, 25);
+  pdf.text(new Date().toLocaleDateString("it-IT"), W - mg, 16, { align: "right" });
+
+  pdf.setTextColor(...ink); pdf.setFont("helvetica", "bold"); pdf.setFontSize(17);
+  pdf.text(c.nome, mg, 50);
+  pdf.setFont("helvetica", "normal"); pdf.setFontSize(11); pdf.setTextColor(100, 100, 100);
+  pdf.text("Cliente: " + (a.cliente || "-"), mg, 57);
+
+  let y = 68;
+  const sez = (titolo, head, body, o2 = {}) => {
+    if (y > 250) { pdf.addPage(); y = 20; }
+    pdf.setFont("helvetica", "bold"); pdf.setFontSize(12); pdf.setTextColor(...ink);
+    pdf.text(titolo, mg, y);
+    pdf.autoTable({
+      startY: y + 3, head: [head], body: body.length ? body : [["Nessun dato"]], theme: "plain",
+      margin: { left: mg, right: mg },
+      styles: { fontSize: 9.5, cellPadding: 2.6, textColor: ink, lineColor: [221, 221, 215], lineWidth: { bottom: 0.2 } },
+      headStyles: { fillColor: ink, textColor: [255, 255, 255], fontStyle: "bold", lineWidth: 0 },
+      alternateRowStyles: { fillColor: [247, 246, 242] },
+      columnStyles: o2.col || {},
+      didParseCell: d => {
+        if (d.section === "body" && o2.hl !== undefined && d.row.index === (o2.hl < 0 ? body.length + o2.hl : o2.hl)) {
+          d.cell.styles.fontStyle = "bold"; d.cell.styles.fillColor = [255, 240, 190];
+        }
+      }
+    });
+    y = pdf.lastAutoTable.finalY + 11;
+  };
+  const R = { halign: "right" };
+
+  sez("Ore per persona", ["Persona", "Ore", "Tariffa", "Costo"],
+    [...Object.values(per).map(x => [x.n, String(x.h), E(x.t) + "/h", E(x.h * x.t)]), ["Totale", String(sum(o, "ore")), "", E(man)]], { col: { 1: R, 2: R, 3: R }, hl: -1 });
+  sez("Dettaglio ore", ["Data", "Persona", "Ore"], o.map(x => [x.data, x.profili?.nome || "-", String(x.ore)]), { col: { 2: R } });
+  sez("Spese e materiali", ["Data", "Categoria", "Descrizione", "Qtà", "Prezzo", "Importo"],
+    s.length ? [...s.map(x => [x.data, x.categoria || "-", x.descrizione || "-", String(x.quantita ?? ""), x.prezzo_unitario != null ? E(x.prezzo_unitario) : "", E(x.importo)]), ["", "", "Totale spese", "", "", E(sp)]] : [], { col: { 3: R, 4: R, 5: R }, hl: s.length ? -1 : undefined });
+  sez("Riepilogo economico", ["Voce", "Importo"],
+    [["Manodopera (ore x tariffa)", E(man)], ["Spese", E(sp)], ["Fatturato (senza IVA)", E(f)], ["IVA " + iva + "%", E(ivaE)], ["Totale con IVA", E(f + ivaE)]], { col: { 1: R }, hl: -1 });
+
+  const n = pdf.internal.getNumberOfPages();
+  for (let i = 1; i <= n; i++) {
+    pdf.setPage(i); pdf.setFontSize(8); pdf.setFont("helvetica", "normal"); pdf.setTextColor(140, 140, 140);
+    pdf.text(azienda + " - " + c.nome, mg, 289);
+    pdf.text("Pagina " + i + " di " + n, W - mg, 289, { align: "right" });
+  }
+  pdf.save("Conto - " + c.nome.replace(/[\\/:*?"<>|]/g, "") + ".pdf");
+}
+async function togg(id, s) { done((await sb.from("cantieri").update({ attivo: s }).eq("id", id)).error); }
+function delC(id) {
+  const c = D.cantieri.find(x => x.id == id);
+  const m = document.createElement("div");
+  m.className = "mod";
+  m.innerHTML = `<div class="mbox" role="dialog" aria-modal="true"><h3>Eliminare il cantiere?</h3><p><b>${esc(c.nome)}</b></p>
+    <p>Verranno eliminate anche le ore e le spese collegate. Gli importi restano nello Storico.</p>
+    <div class="row"><button class="d2" id="mi">Sì, elimina</button><button class="g" id="mn">No, annulla</button></div></div>`;
+  document.body.appendChild(m);
+  const chiudi = () => m.remove();
+  m.querySelector("#mn").onclick = chiudi;
+  m.onclick = e => { if (e.target === m) chiudi(); };
+  m.querySelector("#mi").onclick = () => { chiudi(); eliminaCant(id); };
+  m.querySelector("#mn").focus();
+}
+async function eliminaCant(id) {
+  const c = D.cantieri.find(x => x.id == id);
+  const { man, sp, f } = conto(c);
+  const s = await sb.from("storico").insert({ azienda_id: me.azienda_id, nome_cantiere: c.nome, costo: sp, fatturato: f, ricavo: man });
+  if (s.error) return alert("Errore: " + s.error.message);
+  done((await sb.from("cantieri").delete().eq("id", id)).error);
+}
+function dett() {
+  const p = D.profili.find(x => x.id == det) || {}, o = D.ore.filter(x => x.profilo_id == det);
+  return `<div class="card"><div class="row"><button class="g" onclick="det=null;render()">Indietro</button><h3>${esc(p.nome)}</h3></div><small>${esc(p.email || "")}</small>
+    <div class="k"><div><span>Ore totali</span><b>${sum(o, "ore")}</b></div><div><span>Tariffa oraria</span><b>${eur(tarP(det))}/h</b></div><div><span>Costo</span><b>${eur(manod(o))}</b></div></div></div>
+    <h3>Ore</h3>` + tbl(["Data", "Cantiere", "Ore", ""], o.map(x => [x.data, esc(x.cantieri?.nome), x.ore, xBtn("ore", x.id)]));
+}
+async function resetPw(id) {
+  const p = D.profili.find(x => x.id == id);
+  if (!p || !p.email) return alert("Email non disponibile per questo utente.");
+  if (!confirm("Mandare a " + p.email + " il link per scegliere una nuova password?")) return;
+  const { error } = await sb.auth.resetPasswordForEmail(p.email, { redirectTo: location.origin });
+  alert(error ? "Errore: " + error.message : "Email inviata.");
+}
+async function addDip() {
+  if (!v("dn").trim() || !v("de").trim() || v("dp").length < 6) return alert("Compila nome, email e una password di almeno 6 caratteri.");
+  const tmp = supabase.createClient(URL_SB, KEY_SB, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
+  const { data, error } = await tmp.auth.signUp({ email: v("de").trim(), password: v("dp") });
+  if (error || !data.user) return alert("Errore: " + (error ? error.message : "utente non creato"));
+  if (!data.user.identities || !data.user.identities.length) return alert("Questa email è già registrata. Usa un’altra email oppure eliminala da Supabase → Authentication → Users.");
+  const r = await sb.from("profili").insert({ id: data.user.id, azienda_id: me.azienda_id, nome: v("dn").trim(), email: v("de").trim(), ruolo: "operaio" });
+  if (!r.error) {
+    const e = (await sb.from("profili_admin").insert({ profilo_id: data.user.id, azienda_id: me.azienda_id, tariffa: num(v("dtf")) })).error;
+    if (e) alert("Dipendente creato, ma la tariffa no: " + e.message + "\nHai eseguito lo SQL per la tabella profili_admin?");
+  }
+  if (!r.error && !data.session) alert("Operaio creato, ma Supabase richiede la conferma email: finché non la disattivi (Authentication → Sign In / Providers → Email → Confirm email) l’operaio non potrà accedere.");
+  done(r.error);
+}
+
+init();
+</script>
+</body>
+</html>
